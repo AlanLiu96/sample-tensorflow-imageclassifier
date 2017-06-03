@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+// import the RainbowHat driver
+import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
+
 public class ImageClassifierActivity extends Activity implements ImageReader.OnImageAvailableListener {
     private static final String TAG = "ImageClassifierActivity";
 
@@ -77,7 +80,22 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
     }
 
     private void init() {
-        initPIO();
+//        initPIO();
+
+        try {
+            mButtonDriver = RainbowHat.createButtonAInputDriver(KeyEvent.KEYCODE_ENTER);
+            mButtonDriver.register();
+        } catch (Exception e){
+            Log.d(TAG, "opening buttons is hard", e);
+        }
+
+        try{
+            mReadyLED = RainbowHat.openLedBlue();
+            mReadyLED.setValue(false);
+            mReadyLED.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+        } catch (Exception e){
+            Log.d(TAG, "opening LEDS is hard too", e);
+        }
 
         mBackgroundThread = new HandlerThread("BackgroundThread");
         mBackgroundThread.start();
